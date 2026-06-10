@@ -15,7 +15,7 @@
                             50: '#f5f3ff',
                             100: '#edd8ff',
                             200: '#ddd0fe',
-                            500: '#7c3aed', // Purple/Gender equality tone
+                            500: '#7c3aed', // Púrpura equidad de género
                             600: '#6d28d9',
                             700: '#5b21b6',
                             900: '#2e1065',
@@ -30,13 +30,30 @@
         }
     </script>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght=0,600;1,400&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- PapaParse para procesamiento CSV -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <!-- Confetti para la experiencia de carga exitosa -->
+    <!-- Confetti para celebrar cargas y compartición -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <!-- Script de Carga Inmediata para Evitar Errores de Consola -->
+    <script>
+        // Función global inmediata para evitar errores de consola si la imagen falla antes de cargar el script modular
+        function showLogoFallback() {
+            const img = document.getElementById('brand-logo');
+            if (img) {
+                img.style.display = 'none';
+            }
+            const fallback = document.getElementById('logo-fallback');
+            if (fallback) {
+                fallback.classList.remove('hidden');
+            }
+        }
+        window.showLogoFallback = showLogoFallback;
+    </script>
+
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -63,18 +80,41 @@
 </head>
 <body class="h-full text-slate-800 flex flex-col antialiased">
 
+    <!-- Indicador de Carga Inicial -->
+    <div id="global-loading" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center transition-opacity duration-300">
+        <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center gap-4 max-w-xs text-center">
+            <div class="w-12 h-12 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin"></div>
+            <div>
+                <p class="font-bold text-slate-900 text-sm">Sincronizando Dashboard</p>
+                <p class="text-xs text-slate-500 mt-1">Sincronizando bases de datos y cargando indicadores...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Banner Informativo de Datos Compartidos -->
+    <div id="shared-data-banner" class="hidden bg-gradient-to-r from-brand-700 to-indigo-800 text-white py-2 px-4 text-center text-xs font-semibold relative">
+        <span class="inline-flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            Reporte Sincronizado: Estás visualizando un conjunto de datos compartido en la nube.
+        </span>
+        <button onclick="clearShareMode()" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white text-xs underline font-bold transition">
+            Volver a mis datos locales
+        </button>
+    </div>
+
     <!-- Header Principal -->
     <header class="bg-white border-b border-slate-100 shadow-sm sticky top-0 z-40 transition-all">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <!-- Branding / Logo -->
-            <div class="flex items-center gap-4 w-full sm:w-auto">
-                <div class="relative">
-                    <!-- Intenta cargar el logo adjunto; si falla, muestra un fallback de alta calidad -->
-                    <img id="brand-logo" src="logo el emprendedor x270 de alto.png" alt="ILSA Logo" 
-                         class="h-16 w-auto object-contain transition-all"
-                         onerror="showLogoFallback()">
-                    <div id="logo-fallback" class="hidden h-14 w-14 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-md">
-                        IL
+            <div class="flex items-center gap-4 w-full lg:w-auto">
+                <div class="relative flex items-center gap-3">
+                    <div class="bg-slate-50 p-1.5 rounded-xl border border-slate-100 shadow-inner flex items-center justify-center">
+                        <img id="brand-logo" src="logo el emprendedor x270 de alto.png" alt="El Emprendedor Logo" 
+                             class="h-14 w-auto object-contain transition-all max-w-[150px]"
+                             onerror="showLogoFallback()">
+                        <div id="logo-fallback" class="hidden h-14 w-14 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-md">
+                            EE
+                        </div>
                     </div>
                 </div>
                 <div>
@@ -87,17 +127,40 @@
             </div>
 
             <!-- Metadatos de Corte e Interacción -->
-            <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
+            <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-end">
                 <div class="bg-slate-100/80 rounded-lg px-4 py-2 border border-slate-200/50 text-right">
                     <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Fecha de Corte</p>
                     <p class="text-sm font-semibold text-slate-800" id="cutoff-date-badge">10 de junio de 2026</p>
                 </div>
-                <button onclick="triggerFileInput()" class="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm transition shadow-sm hover:shadow active:scale-95 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
-                    </svg>
-                    Actualizar CSV
-                </button>
+                
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="triggerFileInput()" class="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm transition shadow-sm hover:shadow active:scale-95 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+                        </svg>
+                        Actualizar CSV
+                    </button>
+                    
+                    <button id="btn-share-cloud" onclick="shareDashboardOnCloud()" class="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm transition shadow-sm hover:shadow active:scale-95 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186l5.302-3.111m0 0a2.25 2.25 0 112.25 2.25H14.5a2.25 2.25 0 01-2.25-2.25zm0 3.111l5.302 3.111m0 0a2.25 2.25 0 102.25-2.25H14.5a2.25 2.25 0 01-2.25 2.25z" />
+                        </svg>
+                        Compartir
+                    </button>
+
+                    <button onclick="openImportModal()" class="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium text-sm transition" title="Importar mediante Código">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-6h15" />
+                        </svg>
+                        Importar Código
+                    </button>
+
+                    <button onclick="resetToDemo()" id="btn-reset-demo" class="hidden flex items-center justify-center p-2.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-slate-700 transition" title="Restablecer Datos de Muestra">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                    </button>
+                </div>
                 <input type="file" id="csv-file-input" class="hidden" accept=".csv" onchange="handleFileSelect(event)">
             </div>
         </div>
@@ -106,7 +169,7 @@
     <!-- Contenedor Principal de la App -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-        <!-- Zona de Carga Inicial (Arrastrar y Soltar) / Solo visible si no hay datos -->
+        <!-- Zona de Carga Inicial / Solo visible si no hay datos -->
         <div id="upload-zone" class="bg-white border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center transition hover:border-brand-500 bg-gradient-to-b from-white to-brand-50/10">
             <div class="max-w-md mx-auto">
                 <div class="mx-auto w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center text-brand-600 mb-4 animate-bounce">
@@ -115,16 +178,19 @@
                     </svg>
                 </div>
                 <h3 class="text-lg font-bold text-slate-900 mb-1">Cargar reporte de finalización</h3>
-                <p class="text-sm text-slate-500 mb-6">Arrastra el archivo CSV de capacitación o haz clic para examinarlo desde tu ordenador.</p>
-                <div class="flex justify-center gap-3">
+                <p class="text-sm text-slate-500 mb-6">Sube el archivo CSV de capacitación de ILSA o introduce un código compartido por tu equipo.</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-3">
                     <button onclick="triggerFileInput()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-sm font-semibold transition shadow-md">
-                        Seleccionar Archivo
+                        Seleccionar Archivo CSV
+                    </button>
+                    <button onclick="openImportModal()" class="px-5 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg text-sm font-semibold transition border border-emerald-200">
+                        Importar por Código
                     </button>
                     <button onclick="loadDemoData()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold transition border border-slate-200">
-                        Usar Datos de Muestra
+                        Usar Demo
                     </button>
                 </div>
-                <p class="text-xs text-slate-400 mt-4">Soporta el formato de reporte exportado de la plataforma ILSA.</p>
+                <p class="text-xs text-slate-400 mt-4 font-medium">Soporta el formato de reporte exportado de la plataforma ILSA.</p>
             </div>
         </div>
 
@@ -138,7 +204,7 @@
                 </span>
                 <div>
                     <h4 class="font-bold text-emerald-900 text-sm">¡Base de datos cargada correctamente!</h4>
-                    <p class="text-emerald-700 text-xs">Se han procesado exitosamente los registros de participación para la edición 2025.</p>
+                    <p class="text-emerald-700 text-xs">Los datos y la fecha de corte se han actualizado. Haz clic en "Compartir" para generar el enlace o código para tu equipo.</p>
                 </div>
             </div>
             <button onclick="hideSuccessToast()" class="text-emerald-400 hover:text-emerald-600">
@@ -172,7 +238,6 @@
                     <div class="space-y-1">
                         <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Tasa Finalización</p>
                         <h3 class="text-3xl font-extrabold text-emerald-600" id="kpi-completion-rate">0%</h3>
-                        <!-- Mini Barra de Progreso -->
                         <div class="w-32 bg-slate-100 h-1.5 rounded-full overflow-hidden mt-2">
                             <div id="kpi-progress-bar" class="bg-emerald-500 h-1.5 rounded-full" style="width: 0%"></div>
                         </div>
@@ -215,7 +280,7 @@
 
             <!-- Sección de Gráficos e Información Clave -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Tarjeta: Estado por Módulo (Barras e indicadores individuales) -->
+                <!-- Tarjeta: Estado por Módulo -->
                 <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm lg:col-span-2 flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-4">
@@ -369,14 +434,73 @@
         </div>
     </main>
 
-    <!-- Modal: Detalle de Participante & Emisión de Diploma -->
-    <div id="participant-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all duration-300">
+    <!-- Modal para Importar mediante Código Sencillo (Bypass de Sandbox URL) -->
+    <div id="import-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl w-full max-w-md p-6 overflow-hidden shadow-2xl flex flex-col gap-4">
+            <div class="text-center space-y-2">
+                <span class="text-4xl">🔑</span>
+                <h3 class="text-lg font-bold text-slate-900">Importar Dashboard con Código</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">Pega el código de compartición que te proporcionaron para sincronizar la base de datos de manera inmediata.</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Código de Compartición</label>
+                <input type="text" id="import-code-input" placeholder="Ej: c4b18c02-861f-4..." class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs font-mono focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none">
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeImportModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-semibold text-slate-700 transition">Cancelar</button>
+                <button id="btn-submit-import" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-bold transition">Sincronizar Datos</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Enlace Compartido Generado -->
+    <div id="share-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl w-full max-w-md p-6 overflow-hidden shadow-2xl flex flex-col gap-4">
+            <div class="text-center space-y-2">
+                <span class="text-4xl">🔗</span>
+                <h3 class="text-lg font-bold text-slate-900">¡Compartición de Datos Sincronizada!</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">Debido a que algunos navegadores bloquean las URLs largas dentro de previsualizadores, tienes **dos formas** seguras para que otros lo vean:</p>
+            </div>
+            
+            <!-- Opción A: Código Único (Recomendado) -->
+            <div class="space-y-1 bg-emerald-50 border border-emerald-100 rounded-xl p-3">
+                <span class="text-[9px] uppercase font-bold tracking-wider text-emerald-800">Método 1: Código de Sincronización (Más Seguro)</span>
+                <div class="flex items-center gap-2 mt-1">
+                    <input type="text" id="share-code-input" readonly class="bg-transparent border-none text-xs text-emerald-900 font-mono font-bold flex-1 focus:outline-none select-all" value="">
+                    <button onclick="copyShareCode()" id="btn-copy-code" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition">
+                        Copiar Código
+                    </button>
+                </div>
+            </div>
+
+            <!-- Opción B: Enlace Completo -->
+            <div class="space-y-1 bg-slate-50 border border-slate-200 rounded-xl p-3">
+                <span class="text-[9px] uppercase font-bold tracking-wider text-slate-500">Método 2: Enlace de Acceso Directo</span>
+                <div class="flex items-center gap-2 mt-1">
+                    <input type="text" id="share-url-input" readonly class="bg-transparent border-none text-xs text-slate-700 font-mono flex-1 focus:outline-none select-all" value="">
+                    <button onclick="copyShareUrl()" id="btn-copy-url" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-bold transition">
+                        Copiar Enlace
+                    </button>
+                </div>
+            </div>
+
+            <p class="text-[10px] text-slate-400 text-center leading-normal">Tu equipo puede usar el botón **"Importar por Código"** si el enlace directo se abre sin datos en su previsualizador.</p>
+
+            <div class="flex justify-end pt-2">
+                <button onclick="closeShareModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-semibold text-slate-700 transition">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Detalle de Participante -->
+    <div id="participant-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
         <div class="bg-white rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
-            <!-- Header Modal -->
             <div class="p-5 border-b border-slate-100 bg-gradient-to-r from-brand-600 to-indigo-700 text-white flex items-center justify-between">
                 <div class="space-y-1">
                     <p class="text-[10px] uppercase font-bold tracking-widest text-brand-100">Expediente de Capacitación</p>
-                    <h3 class="text-lg font-bold" id="modal-participant-name">Nombre de Colaborador</h3>
+                    <h3 class="text-lg font-bold" id="modal-participant-name">-</h3>
                 </div>
                 <button onclick="closeModal()" class="text-white hover:text-brand-200 transition p-1 bg-white/10 rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
@@ -385,9 +509,7 @@
                 </button>
             </div>
 
-            <!-- Contenido Modal -->
             <div class="p-6 overflow-y-auto flex-1 space-y-6">
-                <!-- Información General -->
                 <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200/50">
                     <div>
                         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">ID de Empleado</p>
@@ -399,15 +521,14 @@
                     </div>
                 </div>
 
-                <!-- Checklist de Módulos -->
                 <div class="space-y-3">
                     <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Progreso por Módulo Temático</h4>
                     <div id="modal-modules-checklist" class="space-y-2">
-                        <!-- Generados dinámicamente -->
+                        <!-- Checklist dinámico -->
                     </div>
                 </div>
 
-                <!-- Sección Diploma (Sólo visible si finalizó) -->
+                <!-- Sección Diploma -->
                 <div id="modal-diploma-section" class="hidden border border-brand-100 bg-brand-50/30 p-5 rounded-2xl flex flex-col md:flex-row items-center gap-4">
                     <div class="flex-1">
                         <h4 class="text-sm font-bold text-brand-900 flex items-center gap-1.5">
@@ -432,10 +553,8 @@
     </div>
 
     <!-- Modal: Diploma Visual (Imprimible) -->
-    <div id="diploma-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md transition-all duration-300">
+    <div id="diploma-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
         <div class="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-4xl p-1 max-h-[95vh] flex flex-col justify-between">
-            
-            <!-- Herramientas superiores -->
             <div class="bg-slate-100 p-3 flex justify-between items-center border-b border-slate-200">
                 <span class="text-xs font-bold text-slate-600">Vista Previa de Certificado Oficial</span>
                 <div class="flex items-center gap-2">
@@ -451,17 +570,13 @@
                 </div>
             </div>
 
-            <!-- Contenedor del Diploma para impresión -->
             <div id="diploma-canvas-container" class="flex-1 bg-slate-100 overflow-y-auto p-4 flex items-center justify-center">
-                <!-- Certificado en diseño elegante -->
                 <div id="printable-diploma" class="bg-white w-[842px] h-[595px] p-12 border-[16px] border-double border-brand-900 relative shadow-lg mx-auto flex flex-col justify-between select-none">
-                    <!-- Patrones Esquinados Estéticos -->
                     <div class="absolute top-4 left-4 w-12 h-12 border-t-2 border-l-2 border-brand-500"></div>
                     <div class="absolute top-4 right-4 w-12 h-12 border-t-2 border-r-2 border-brand-500"></div>
                     <div class="absolute bottom-4 left-4 w-12 h-12 border-b-2 border-l-2 border-brand-500"></div>
                     <div class="absolute bottom-4 right-4 w-12 h-12 border-b-2 border-r-2 border-brand-500"></div>
 
-                    <!-- Encabezado del Diploma -->
                     <div class="text-center space-y-2 mt-4">
                         <div class="flex justify-center items-center gap-3 mb-2">
                             <span class="text-xs uppercase tracking-widest font-extrabold text-brand-700 bg-brand-50 px-3 py-1 rounded">Certificado Oficial de Finalización</span>
@@ -470,11 +585,10 @@
                         <div class="w-16 h-1 bg-gradient-to-r from-brand-600 to-indigo-600 mx-auto mt-2"></div>
                     </div>
 
-                    <!-- Cuerpo de Certificación -->
                     <div class="text-center space-y-4 my-6">
                         <p class="text-sm font-medium italic text-slate-500">Otorga el presente reconocimiento a:</p>
                         <h1 id="diploma-recipient-name" class="font-serif text-3xl font-bold text-slate-900 tracking-tight border-b border-slate-200 pb-2 max-w-lg mx-auto">
-                            NOMBRE COMPLETO DEL COLABORADOR
+                            -
                         </h1>
                         <p class="text-xs text-slate-600 max-w-xl mx-auto leading-relaxed">
                             Por haber culminado con éxito todas las fases formativas y de validación de contenidos del programa corporativo de capacitación de cumplimiento ético y legal:
@@ -487,25 +601,21 @@
                         </p>
                     </div>
 
-                    <!-- Firmas / Fechas -->
                     <div class="grid grid-cols-3 gap-4 items-end mt-4">
-                        <!-- Fecha de Emisión -->
                         <div class="text-center space-y-1">
                             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Fecha de Emisión</p>
                             <p class="text-xs font-semibold text-slate-800" id="diploma-completion-date">10 de junio de 2026</p>
                         </div>
                         
-                        <!-- Firma -->
                         <div class="text-center space-y-2 flex flex-col items-center">
                             <div class="font-serif text-xl text-slate-500 italic relative top-2">Comité de Igualdad</div>
                             <div class="w-32 border-b border-slate-300"></div>
                             <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Dirección de Recursos Humanos</p>
                         </div>
 
-                        <!-- ID Único / Validación -->
                         <div class="text-center space-y-1">
                             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">ID de Colaborador</p>
-                            <p class="text-xs font-mono font-semibold text-brand-800" id="diploma-cert-id">ILSA-98509</p>
+                            <p class="text-xs font-mono font-semibold text-brand-800" id="diploma-cert-id">-</p>
                         </div>
                     </div>
                 </div>
@@ -522,24 +632,54 @@
                 <span>Programa de Responsabilidad Corporativa e Inclusión</span>
             </div>
             <div>
-                Dashboard de Control Interno v2.1 • Todos los derechos reservados.
+                Dashboard de Control Interno v2.4 • Todos los derechos reservados.
             </div>
         </div>
     </footer>
 
-    <!-- Bloque de Lógica Javascript -->
-    <script>
-        // Variables de Estado Global de la App
-        let rawDataset = [];
-        let cleanDataset = [];
-        let filteredDataset = [];
-        let selectedParticipant = null;
+    <!-- Firebase y Lógica Completa Unificada en un Único Módulo Seguro -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Paginación
+        // Parámetros e Inicialización Segura de Entorno
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        let firebaseConfig = null;
+        let initialAuthToken = null;
+
+        try {
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                firebaseConfig = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
+            }
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                initialAuthToken = __initial_auth_token;
+            }
+        } catch (e) {
+            console.error("Error al inicializar las configuraciones de entorno:", e);
+        }
+
+        let db = null;
+        let auth = null;
+        let isSharedMode = false;
+
+        if (firebaseConfig) {
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        }
+
+        // Estado Operacional Global de la Aplicación
+        window.rawDataset = [];
+        window.cleanDataset = [];
+        window.filteredDataset = [];
+        let selectedParticipant = null;
         let currentPage = 1;
         const rowsPerPage = 10;
 
-        // Definiciones de Módulos (Exactamente las del CSV)
+        let completionChartInstance = null;
+        let timelineChartInstance = null;
+
         const MODULE_NAMES = [
             "Módulo 1: Género e inclusión laboral",
             "Módulo 2: Equidad e igualdad de género en las organizaciones",
@@ -548,7 +688,6 @@
             "Módulo 5:   Erradicar la violencia de género en las organizaciones"
         ];
 
-        // Definición de Fechas de Finalización
         const MODULE_DATE_KEYS = [
             "Módulo 1: Género e inclusión laboral - Fecha de finalización",
             "Módulo 2: Equidad e igualdad de género en las organizaciones - Fecha de finalización",
@@ -557,37 +696,221 @@
             "Módulo 5:   Erradicar la violencia de género en las organizaciones - Fecha de finalización"
         ];
 
-        // Instancias de Gráficos de Chart.js
-        let completionChartInstance = null;
-        let timelineChartInstance = null;
-
-        // Al iniciar la página, se carga el set de datos interactivo por defecto
-        window.onload = function() {
-            loadDemoData();
-        };
-
-        // Fallback para cuando el logo subido no esté accesible en la misma carpeta local
-        function showLogoFallback() {
-            document.getElementById('brand-logo').classList.add('hidden');
-            document.getElementById('logo-fallback').classList.remove('hidden');
+        // Autenticación en la Nube con Firebase (RULE 3)
+        async function authenticateUser() {
+            if (!auth) return null;
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                return auth.currentUser;
+            } catch (error) {
+                console.error("Error de autenticación anónima/token:", error);
+                return null;
+            }
         }
 
-        // Simula la llamada del file picker escondido
+        // Recuperar Datos por Identificador (Bypass de Sandbox URL)
+        async function loadSharedDataById(shareId) {
+            if (!db) {
+                showCustomNotification("El servicio de base de datos en la nube no está configurado.");
+                return;
+            }
+
+            const loadIndicator = document.getElementById('global-loading');
+            loadIndicator.classList.remove('hidden');
+            loadIndicator.classList.remove('opacity-0');
+
+            try {
+                await authenticateUser();
+                // RULE 1 - Strict Path para datos públicos compartidos
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'shares', shareId);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const sharedContent = docSnap.data();
+                    window.cleanDataset = sharedContent.dataset;
+                    window.filteredDataset = [...window.cleanDataset];
+                    
+                    isSharedMode = true;
+                    document.getElementById('shared-data-banner').classList.remove('hidden');
+                    document.getElementById('cutoff-date-badge').innerText = sharedContent.cutoffDate;
+                    
+                    document.getElementById('upload-zone').classList.add('hidden');
+                    document.getElementById('dashboard-content').classList.remove('hidden');
+                    document.getElementById('btn-reset-demo').classList.add('hidden');
+
+                    renderKPIs();
+                    renderCharts();
+                    renderModuleBreakdown();
+                    renderDomainBreakdown();
+                    renderTable();
+                    
+                    confetti({
+                        particleCount: 100,
+                        spread: 60,
+                        origin: { y: 0.8 }
+                    });
+                    return true;
+                } else {
+                    showCustomNotification("El código introducido no es válido o los datos han expirado.");
+                    return false;
+                }
+            } catch (err) {
+                console.error("Error cargando el código compartido:", err);
+                showCustomNotification("Ocurrió un error al conectar con la nube para importar el código.");
+                return false;
+            } finally {
+                loadIndicator.classList.add('opacity-0');
+                setTimeout(() => loadIndicator.classList.add('hidden'), 300);
+            }
+        }
+
+        // Subir datos locales a la nube
+        async function shareDashboardOnCloud() {
+            if (!db) {
+                showCustomNotification("El servicio de compartición en la nube no está disponible.");
+                return;
+            }
+
+            const shareButton = document.getElementById('btn-share-cloud');
+            const originalText = shareButton.innerHTML;
+            shareButton.disabled = true;
+            shareButton.innerHTML = `<span class="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-1"></span> Sincronizando...`;
+
+            try {
+                const user = await authenticateUser();
+                if (!user) throw new Error("Fallo de autenticación");
+
+                const shareId = crypto.randomUUID();
+                const cutoffDateValue = document.getElementById('cutoff-date-badge').innerText;
+
+                const sharePayload = {
+                    dataset: window.cleanDataset,
+                    cutoffDate: cutoffDateValue,
+                    createdAt: new Date().toISOString()
+                };
+
+                // RULE 1 - Strict Path para datos públicos compartidos
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'shares', shareId);
+                await setDoc(docRef, sharePayload);
+
+                // Generar URL robusta
+                const shareUrl = window.location.origin + window.location.pathname + '?share=' + shareId;
+                
+                document.getElementById('share-code-input').value = shareId;
+                document.getElementById('share-url-input').value = shareUrl;
+                document.getElementById('share-modal').classList.remove('hidden');
+
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+
+            } catch (err) {
+                console.error("Error al compartir en la nube:", err);
+                showCustomNotification("Ocurrió un error al registrar los datos en el servidor.");
+            } finally {
+                shareButton.disabled = false;
+                shareButton.innerHTML = originalText;
+            }
+        }
+
+        // Cargar parámetros de URL al iniciar
+        async function checkAndLoadInitialState() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const shareId = urlParams.get('share');
+
+            if (shareId && db) {
+                const success = await loadSharedDataById(shareId);
+                if (!success) {
+                    loadPersistedData();
+                }
+            } else {
+                loadPersistedData();
+            }
+
+            // Ocultar pantalla de carga inicial
+            const globalLoader = document.getElementById('global-loading');
+            globalLoader.classList.add('opacity-0');
+            setTimeout(() => globalLoader.classList.add('hidden'), 300);
+        }
+
+        // Lógica de Persistencia Local
+        function loadPersistedData() {
+            const savedData = localStorage.getItem('ilsa_dashboard_data');
+            const savedDate = localStorage.getItem('ilsa_cutoff_date');
+
+            if (savedData && savedDate) {
+                window.cleanDataset = JSON.parse(savedData);
+                window.filteredDataset = [...window.cleanDataset];
+                
+                document.getElementById('cutoff-date-badge').innerText = savedDate;
+                document.getElementById('btn-reset-demo').classList.remove('hidden');
+
+                document.getElementById('upload-zone').classList.add('hidden');
+                document.getElementById('dashboard-content').classList.remove('hidden');
+
+                renderKPIs();
+                renderCharts();
+                renderModuleBreakdown();
+                renderDomainBreakdown();
+                renderTable();
+            } else {
+                loadDemoData(true);
+            }
+        }
+
+        function saveToLocalStorage(data, date) {
+            localStorage.setItem('ilsa_dashboard_data', JSON.stringify(data));
+            localStorage.setItem('ilsa_cutoff_date', date);
+            document.getElementById('btn-reset-demo').classList.remove('hidden');
+        }
+
+        function resetToDemo() {
+            localStorage.removeItem('ilsa_dashboard_data');
+            localStorage.removeItem('ilsa_cutoff_date');
+            document.getElementById('btn-reset-demo').classList.add('hidden');
+            loadDemoData();
+            
+            confetti({
+                particleCount: 50,
+                spread: 40,
+                origin: { y: 0.9 }
+            });
+        }
+
         function triggerFileInput() {
             document.getElementById('csv-file-input').click();
         }
 
-        // Manejar la selección y parseo del archivo por el usuario
+        function getFormattedCurrentDate() {
+            const meses = [
+                "enero", "febrero", "marzo", "abril", "mayo", "junio", 
+                "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+            ];
+            const d = new Date();
+            const dia = d.getDate();
+            const mesStr = meses[d.getMonth()];
+            const anio = d.getFullYear();
+            return `${dia} de ${mesStr} de ${anio}`;
+        }
+
         function handleFileSelect(event) {
             const file = event.target.files[0];
             if (!file) return;
 
-            Papa.parse(file, {
+            window.Papa.parse(file, {
                 header: true,
                 skipEmptyLines: true,
                 complete: function(results) {
                     if (results.data && results.data.length > 0) {
-                        processUploadedData(results.data);
+                        const newCutoffDate = getFormattedCurrentDate();
+                        processUploadedData(results.data, newCutoffDate);
+                        
                         confetti({
                             particleCount: 150,
                             spread: 80,
@@ -595,22 +918,19 @@
                         });
                         showSuccessToast();
                     } else {
-                        showCustomNotification("El archivo CSV parece estar vacío o su formato no es válido.");
+                        showCustomNotification("El archivo CSV cargado no contiene datos válidos.");
                     }
                 },
                 error: function(err) {
-                    showCustomNotification("Error al procesar el archivo CSV: " + err.message);
+                    showCustomNotification("Error de procesamiento CSV: " + err.message);
                 }
             });
         }
 
-        // Procesar los registros leídos
-        function processUploadedData(data) {
-            rawDataset = data;
+        function processUploadedData(data, cutoffDateValue) {
+            window.rawDataset = data;
             
-            // Limpiar claves y asegurar un mapeado correcto
-            cleanDataset = rawDataset.map(item => {
-                // Calcular progreso total (módulos con valor "Finalizado")
+            window.cleanDataset = window.rawDataset.map(item => {
                 let completedCount = 0;
                 MODULE_NAMES.forEach(modName => {
                     if (item[modName] && item[modName].trim().toLowerCase() === 'finalizado') {
@@ -618,26 +938,21 @@
                     }
                 });
 
-                // Comprobación si todo el curso está finalizado
                 const isCourseDone = (completedCount === 5 || (item['Curso finalizado'] && item['Curso finalizado'].trim().toLowerCase() === 'finalizado'));
                 
-                // Determinar fecha final global
                 let globalCompletionDate = "";
                 if (isCourseDone) {
-                    // Buscar la fecha más tardía de los módulos para estimar la fecha del certificado, si la columna directa está vacía
                     if (item['Curso finalizado'] && item['Curso finalizado'].match(/\d+/)) {
                         globalCompletionDate = item['Curso finalizado'];
                     } else {
-                        // Buscar la última fecha de finalización de módulos
                         let dates = [];
                         MODULE_DATE_KEYS.forEach(k => {
                             if (item[k]) dates.push(item[k]);
                         });
                         if (dates.length > 0) {
-                            // Se asume la última fecha agregada
                             globalCompletionDate = dates[dates.length - 1];
                         } else {
-                            globalCompletionDate = "10/06/2026 12:28"; // Backup
+                            globalCompletionDate = "10/06/2026 12:28";
                         }
                     }
                 }
@@ -662,17 +977,16 @@
                 };
             });
 
-            // Forzar orden alfabético por defecto
-            cleanDataset.sort((a, b) => a.nombre.localeCompare(b.nombre));
-
-            filteredDataset = [...cleanDataset];
+            window.cleanDataset.sort((a, b) => a.nombre.localeCompare(b.nombre));
+            window.filteredDataset = [...window.cleanDataset];
             currentPage = 1;
 
-            // Ocultar dropzone, mostrar dashboard principal
+            document.getElementById('cutoff-date-badge').innerText = cutoffDateValue;
             document.getElementById('upload-zone').classList.add('hidden');
             document.getElementById('dashboard-content').classList.remove('hidden');
 
-            // Renderizar vistas
+            saveToLocalStorage(window.cleanDataset, cutoffDateValue);
+
             renderKPIs();
             renderCharts();
             renderModuleBreakdown();
@@ -680,10 +994,10 @@
             renderTable();
         }
 
-        // Renderizar los KPIs superiores
+        // Renderizadores de Interfaz
         function renderKPIs() {
-            const total = cleanDataset.length;
-            const completed = cleanDataset.filter(item => item.completado).length;
+            const total = window.cleanDataset.length;
+            const completed = window.cleanDataset.filter(item => item.completado).length;
             const pending = total - completed;
             const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
 
@@ -694,19 +1008,16 @@
             document.getElementById('kpi-total-pending').innerText = pending;
         }
 
-        // Renderizar Barras de Progreso Detalladas por Módulo
         function renderModuleBreakdown() {
             const container = document.getElementById('module-progress-bars');
             container.innerHTML = '';
-
-            const totalParticipants = cleanDataset.length;
+            const totalParticipants = window.cleanDataset.length;
 
             MODULE_NAMES.forEach((modName, idx) => {
                 const cleanKey = `m${idx + 1}`;
-                const completedCount = cleanDataset.filter(item => item[cleanKey].toLowerCase() === 'finalizado').length;
+                const completedCount = window.cleanDataset.filter(item => item[cleanKey].toLowerCase() === 'finalizado').length;
                 const percentage = totalParticipants > 0 ? Math.round((completedCount / totalParticipants) * 100) : 0;
 
-                // Color según índice
                 const colors = ['from-purple-500 to-indigo-500', 'from-blue-500 to-cyan-500', 'from-emerald-500 to-teal-500', 'from-amber-500 to-orange-500', 'from-rose-500 to-pink-500'];
                 const selectedGradient = colors[idx % colors.length];
 
@@ -725,14 +1036,12 @@
             });
         }
 
-        // Renderizar Distribución Organizacional por Dominio de Correo
         function renderDomainBreakdown() {
             const domainList = document.getElementById('domain-list');
             domainList.innerHTML = '';
 
-            // Agrupar por dominio
             const domains = {};
-            cleanDataset.forEach(item => {
+            window.cleanDataset.forEach(item => {
                 const parts = item.email.split('@');
                 const domain = parts.length > 1 ? parts[1].toLowerCase() : 'otros';
                 if (!domains[domain]) {
@@ -744,7 +1053,6 @@
                 }
             });
 
-            // Ordenar dominios por cantidad total de inscritos
             const sortedDomains = Object.keys(domains).sort((a, b) => domains[b].total - domains[a].total);
 
             sortedDomains.forEach(dom => {
@@ -770,19 +1078,17 @@
             });
         }
 
-        // Inicialización y actualización de gráficos
         function renderCharts() {
-            const total = cleanDataset.length;
-            const completed = cleanDataset.filter(item => item.completado).length;
+            const total = window.cleanDataset.length;
+            const completed = window.cleanDataset.filter(item => item.completado).length;
             const pending = total - completed;
 
-            // 1. Gráfico de Dona: Distribución de Finalización
             if (completionChartInstance) {
                 completionChartInstance.destroy();
             }
 
             const ctxDonut = document.getElementById('completion-donut-chart').getContext('2d');
-            completionChartInstance = new Chart(ctxDonut, {
+            completionChartInstance = new window.Chart(ctxDonut, {
                 type: 'doughnut',
                 data: {
                     labels: ['Completado (100%)', 'Pendiente / En Progreso'],
@@ -806,23 +1112,18 @@
                 }
             });
 
-            // 2. Gráfico de Línea: Progreso Temporal Acumulado
-            // Extraer fechas de finalización y ordenarlas
-            const completedDates = cleanDataset
+            const completedDates = window.cleanDataset
                 .filter(item => item.completado && item.fecha_fin)
                 .map(item => {
-                    // Extraer solo la fecha (día/mes/año)
                     const parts = item.fecha_fin.split(' ');
                     return parts[0];
                 });
 
-            // Agrupar acumulativo por fecha
             const dateCounts = {};
             completedDates.forEach(d => {
                 dateCounts[d] = (dateCounts[d] || 0) + 1;
             });
 
-            // Ordenar fechas cronológicamente
             const sortedDates = Object.keys(dateCounts).sort((a, b) => {
                 const parseDate = (dStr) => {
                     const p = dStr.split('/');
@@ -831,7 +1132,6 @@
                 return parseDate(a) - parseDate(b);
             });
 
-            // Calcular acumulado
             let runningTotal = 0;
             const cumulativeData = sortedDates.map(date => {
                 runningTotal += dateCounts[date];
@@ -843,7 +1143,7 @@
             }
 
             const ctxLine = document.getElementById('timeline-line-chart').getContext('2d');
-            timelineChartInstance = new Chart(ctxLine, {
+            timelineChartInstance = new window.Chart(ctxLine, {
                 type: 'line',
                 data: {
                     labels: sortedDates,
@@ -897,14 +1197,13 @@
             });
         }
 
-        // Renderizar Directorio de Colaboradores (Tabla)
         function renderTable() {
             const tableBody = document.getElementById('colaboradores-table-body');
             tableBody.innerHTML = '';
 
             const startIndex = (currentPage - 1) * rowsPerPage;
             const endIndex = startIndex + rowsPerPage;
-            const pageData = filteredDataset.slice(startIndex, endIndex);
+            const pageData = window.filteredDataset.slice(startIndex, endIndex);
 
             if (pageData.length === 0) {
                 tableBody.innerHTML = `
@@ -926,7 +1225,6 @@
                 const totalMod = item.modulos_completados;
                 const pct = Math.round((totalMod / 5) * 100);
 
-                // Colores de estatus por módulo
                 const getModBadge = (status) => {
                     if (status.trim().toLowerCase() === 'finalizado') {
                         return `<span class="inline-flex h-5 w-5 rounded-full bg-emerald-100 text-emerald-800 items-center justify-center font-bold text-[10px]" title="Completado">✓</span>`;
@@ -968,14 +1266,13 @@
                 tableBody.appendChild(tr);
             });
 
-            updatePaginationControls(filteredDataset.length);
+            updatePaginationControls(window.filteredDataset.length);
         }
 
-        // Lógica de Paginación
         function updatePaginationControls(totalRows) {
             const totalPages = Math.max(1, Math.ceil(totalRows / rowsPerPage));
             
-            document.getElementById('table-row-count').innerText = `Mostrando ${Math.min(filteredDataset.length, (currentPage - 1) * rowsPerPage + 1)}-${Math.min(filteredDataset.length, currentPage * rowsPerPage)} de ${filteredDataset.length} registros`;
+            document.getElementById('table-row-count').innerText = `Mostrando ${Math.min(window.filteredDataset.length, (currentPage - 1) * rowsPerPage + 1)}-${Math.min(window.filteredDataset.length, currentPage * rowsPerPage)} de ${window.filteredDataset.length} registros`;
             document.getElementById('table-page-indicator').innerText = `Página ${currentPage} de ${totalPages}`;
             
             document.getElementById('btn-prev-page').disabled = (currentPage === 1);
@@ -990,23 +1287,20 @@
         }
 
         function nextPage() {
-            const totalPages = Math.ceil(filteredDataset.length / rowsPerPage);
+            const totalPages = Math.ceil(window.filteredDataset.length / rowsPerPage);
             if (currentPage < totalPages) {
                 currentPage++;
                 renderTable();
             }
         }
 
-        // Filtrar y Buscar en la Tabla
         function filterTable() {
             const searchQuery = document.getElementById('table-search-input').value.toLowerCase().trim();
             const statusFilter = document.getElementById('table-filter-status').value;
 
-            filteredDataset = cleanDataset.filter(item => {
-                // Filtro de búsqueda
+            window.filteredDataset = window.cleanDataset.filter(item => {
                 const matchesSearch = item.nombre.toLowerCase().includes(searchQuery) || item.email.toLowerCase().includes(searchQuery) || item.id.toString().includes(searchQuery);
                 
-                // Filtro de estado
                 let matchesStatus = true;
                 if (statusFilter === 'finalizado') {
                     matchesStatus = item.completado;
@@ -1021,9 +1315,8 @@
             renderTable();
         }
 
-        // Modal de Ficha de Participación
         function openParticipantModal(id) {
-            const user = cleanDataset.find(item => item.id.toString() === id.toString());
+            const user = window.cleanDataset.find(item => item.id.toString() === id.toString());
             if (!user) return;
 
             selectedParticipant = user;
@@ -1032,7 +1325,6 @@
             document.getElementById('modal-participant-id').innerText = user.id;
             document.getElementById('modal-participant-email').innerText = user.email;
 
-            // Armar checklist detallada de módulos
             const checklistContainer = document.getElementById('modal-modules-checklist');
             checklistContainer.innerHTML = '';
 
@@ -1062,7 +1354,6 @@
                 checklistContainer.innerHTML += itemHtml;
             });
 
-            // Secciones del diploma
             const diplomaSection = document.getElementById('modal-diploma-section');
             if (user.completado) {
                 diplomaSection.classList.remove('hidden');
@@ -1078,7 +1369,6 @@
             selectedParticipant = null;
         }
 
-        // Lógica de Certificación / Diploma Visual
         function generateCertificate() {
             if (!selectedParticipant) return;
 
@@ -1097,15 +1387,13 @@
             window.print();
         }
 
-        // Cargar Reporte Filtrado como CSV para exportación inmediata
         function exportFilteredData() {
-            if (filteredDataset.length === 0) return;
+            if (window.filteredDataset.length === 0) return;
 
-            // Cabeceras de salida
             let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
             csvContent += "ID,Nombre,Email,Progreso %,M1,M2,M3,M4,M5,Curso Finalizado,Fecha Finalizacion\n";
 
-            filteredDataset.forEach(item => {
+            window.filteredDataset.forEach(item => {
                 const pct = Math.round((item.modulos_completados / 5) * 100);
                 const row = [
                     item.id,
@@ -1132,26 +1420,80 @@
             document.body.removeChild(link);
         }
 
-        // Toast de Éxito
-        function showSuccessToast() {
-            const toast = document.getElementById('success-toast');
-            toast.classList.remove('hidden');
+        // Lógica de Modales de Importación / Compartición
+        function openImportModal() {
+            document.getElementById('import-code-input').value = '';
+            document.getElementById('import-modal').classList.remove('hidden');
+        }
+
+        function closeImportModal() {
+            document.getElementById('import-modal').classList.add('hidden');
+        }
+
+        async function submitImportCode() {
+            const code = document.getElementById('import-code-input').value.trim();
+            if (!code) {
+                showCustomNotification("Por favor, introduce un código de compartición válido.");
+                return;
+            }
+            closeImportModal();
+            const success = await loadSharedDataById(code);
+            if (success) {
+                showCustomNotification("¡Sincronización exitosa! Se han cargado los datos compartidos.");
+            }
+        }
+
+        function closeShareModal() {
+            document.getElementById('share-modal').classList.add('hidden');
+        }
+
+        function copyShareUrl() {
+            const input = document.getElementById('share-url-input');
+            input.select();
+            document.execCommand('copy');
+            
+            const copyBtn = document.getElementById('btn-copy-url');
+            const originalText = copyBtn.innerText;
+            copyBtn.innerText = "¡Copiado!";
+            copyBtn.classList.replace('bg-brand-600', 'bg-emerald-600');
+            
             setTimeout(() => {
-                hideSuccessToast();
-            }, 6000);
+                copyBtn.innerText = originalText;
+                copyBtn.classList.replace('bg-emerald-600', 'bg-brand-600');
+            }, 2000);
+        }
+
+        function copyShareCode() {
+            const input = document.getElementById('share-code-input');
+            input.select();
+            document.execCommand('copy');
+            
+            const copyBtn = document.getElementById('btn-copy-code');
+            const originalText = copyBtn.innerText;
+            copyBtn.innerText = "¡Copiado!";
+            copyBtn.classList.replace('bg-emerald-600', 'bg-brand-600');
+            
+            setTimeout(() => {
+                copyBtn.innerText = originalText;
+                copyBtn.classList.replace('bg-brand-600', 'bg-emerald-600');
+            }, 2000);
+        }
+
+        function clearShareMode() {
+            const urlWithoutParams = window.location.origin + window.location.pathname;
+            window.location.href = urlWithoutParams;
         }
 
         function hideSuccessToast() {
             document.getElementById('success-toast').classList.add('hidden');
         }
 
-        // Diálogo simple simulando notificaciones integrales
         function showCustomNotification(text) {
-            alert(text); // Implementación nativa simple segura
+            alert(text);
         }
 
-        // Carga de Set de Datos Inicial / Demo para vista por defecto preciosa
-        function loadDemoData() {
+        // Datos de Demo por defecto
+        function loadDemoData(isSilent = false) {
             const demoData = [
                 {
                     "ID": "98509", "Nombre": "DAISY SIMBA", "Dirección de correo": "dsimba@ilsa.la",
@@ -1206,20 +1548,48 @@
                     "Módulo 4:  Atención de denuncias por discriminación salarial": "Finalizado", "Módulo 4:  Atención de denuncias por discriminación salarial - Fecha de finalización": "22/05/2026 11:45",
                     "Módulo 5:   Erradicar la violencia de género en las organizaciones": "No finalizado", "Módulo 5:   Erradicar la violencia de género en las organizaciones - Fecha de finalización": "",
                     "Curso finalizado": "No finalizado"
-                },
-                {
-                    "ID": "98519", "Nombre": "GABRIELA CHAMBA", "Dirección de correo": "gchamba@grafandina.com",
-                    "Módulo 1: Género e inclusión laboral": "No finalizado", "Módulo 1: Género e inclusión laboral - Fecha de finalización": "",
-                    "Módulo 2: Equidad e igualdad de género en las organizaciones": "No finalizado", "Módulo 2: Equidad e igualdad de género en las organizaciones - Fecha de finalización": "",
-                    "Módulo 3: Derechos laborales de mujeres y hombres": "No finalizado", "Módulo 3: Derechos laborales de mujeres y hombres - Fecha de finalización": "",
-                    "Módulo 4:  Atención de denuncias por discriminación salarial": "No finalizado", "Módulo 4:  Atención de denuncias por discriminación salarial - Fecha de finalización": "",
-                    "Módulo 5:   Erradicar la violencia de género en las organizaciones": "No finalizado", "Módulo 5:   Erradicar la violencia de género en las organizaciones - Fecha de finalización": "",
-                    "Curso finalizado": "No finalizado"
                 }
             ];
 
-            processUploadedData(demoData);
+            const defaultDate = "10 de junio de 2026";
+            processUploadedData(demoData, defaultDate);
+            document.getElementById('btn-reset-demo').classList.add('hidden');
+            localStorage.removeItem('ilsa_dashboard_data');
+            localStorage.removeItem('ilsa_cutoff_date');
         }
+
+        // Vinculación de Funciones al Ámbito Global de window para Inline HTML
+        window.triggerFileInput = triggerFileInput;
+        window.handleFileSelect = handleFileSelect;
+        window.loadDemoData = loadDemoData;
+        window.loadPersistedData = loadPersistedData;
+        window.resetToDemo = resetToDemo;
+        window.prevPage = prevPage;
+        window.nextPage = nextPage;
+        window.filterTable = filterTable;
+        window.openParticipantModal = openParticipantModal;
+        window.closeModal = closeModal;
+        window.generateCertificate = generateCertificate;
+        window.closeDiplomaModal = closeDiplomaModal;
+        window.printDiploma = printDiploma;
+        window.exportFilteredData = exportFilteredData;
+        window.openImportModal = openImportModal;
+        window.closeImportModal = closeImportModal;
+        window.closeShareModal = closeShareModal;
+        window.copyShareUrl = copyShareUrl;
+        window.copyShareCode = copyShareCode;
+        window.hideSuccessToast = hideSuccessToast;
+        window.clearShareMode = clearShareMode;
+        window.shareDashboardOnCloud = shareDashboardOnCloud;
+
+        // Event Listeners Estables
+        document.getElementById('btn-submit-import').addEventListener('click', submitImportCode);
+        window.addEventListener('DOMContentLoaded', checkAndInitialStateWrapper);
+
+        function checkAndInitialStateWrapper() {
+            checkAndLoadInitialState();
+        }
+
     </script>
 </body>
 </html>
