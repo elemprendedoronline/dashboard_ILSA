@@ -171,7 +171,7 @@
                     </div>
                 </div>
 
-                <!-- Tarjeta 3: Cursos Completados -->
+                <!-- Tarjeta 3: Usuarios que completaron el curso -->
                 <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between transition hover:shadow-md">
                     <div class="space-y-1">
                         <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Cursos Completados</p>
@@ -188,7 +188,7 @@
                 <!-- Tarjeta 4: En Curso / Pendientes -->
                 <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between transition hover:shadow-md">
                     <div class="space-y-1">
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">En Progreso / Pendientes</p>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Usuarios en Progreso / Pendientes</p>
                         <h3 class="text-3xl font-extrabold text-amber-500" id="kpi-total-pending">0</h3>
                         <p class="text-xs text-slate-500">Avance parcial o sin iniciar</p>
                     </div>
@@ -217,7 +217,7 @@
                         </div>
                     </div>
                     <div class="pt-4 border-t border-slate-100 mt-6 flex justify-between items-center text-xs text-slate-500">
-                        <span>* Información sincronizada automáticamente desde GitHub Pages.</span>
+                        <span>* Información sincronizada automáticamente desde Taltura.</span>
                     </div>
                 </div>
 
@@ -374,7 +374,7 @@
             <div class="p-6 overflow-y-auto flex-1 space-y-6">
                 <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200/50">
                     <div>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">ID de Empleado</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">ID del usuario</p>
                         <p class="text-sm font-semibold text-slate-800" id="modal-participant-id">-</p>
                     </div>
                     <div>
@@ -814,7 +814,7 @@
                 completionChartInstance = new chartLoader(ctxDonut, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Completado (100%)', 'Pendiente / En Progreso'],
+                        labels: ['Completado', 'Pendiente / En Progreso'],
                         datasets: [{
                             data: [completed, pending],
                             backgroundColor: ['#10b981', '#fbbf24'],
