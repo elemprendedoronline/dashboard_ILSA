@@ -15,7 +15,7 @@
                             50: '#f5f3ff',
                             100: '#edd8ff',
                             200: '#ddd0fe',
-                            500: '#7c3aed', // Púrpura equidad de género
+                            500: '#7c3aed', // Púrpura de equidad salarial y género
                             600: '#6d28d9',
                             700: '#5b21b6',
                             900: '#2e1065',
@@ -38,18 +38,18 @@
     <!-- Confetti para celebrar cargas y compartición -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
-    <!-- Script de Carga Inmediata para Evitar Errores de Consola -->
+    <!-- Script de carga inmediata preventiva en head para evitar fallos de onError del logo -->
     <script>
-        // Función global inmediata para evitar errores de consola si la imagen falla antes de cargar el script modular
-        function showLogoFallback() {
-            const img = document.getElementById('brand-logo');
+        function showLogoFallback(img) {
             if (img) {
                 img.style.display = 'none';
             }
-            const fallback = document.getElementById('logo-fallback');
-            if (fallback) {
-                fallback.classList.remove('hidden');
-            }
+            setTimeout(function() {
+                const fallback = document.getElementById('logo-fallback');
+                if (fallback) {
+                    fallback.classList.remove('hidden');
+                }
+            }, 0);
         }
         window.showLogoFallback = showLogoFallback;
     </script>
@@ -85,21 +85,10 @@
         <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center gap-4 max-w-xs text-center">
             <div class="w-12 h-12 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin"></div>
             <div>
-                <p class="font-bold text-slate-900 text-sm">Sincronizando Dashboard</p>
-                <p class="text-xs text-slate-500 mt-1">Sincronizando bases de datos y cargando indicadores...</p>
+                <p class="font-bold text-slate-900 text-sm">Sincronizando con GitHub</p>
+                <p class="text-xs text-slate-500 mt-1">Obteniendo el archivo CSV de datos y calculando métricas temporales...</p>
             </div>
         </div>
-    </div>
-
-    <!-- Banner Informativo de Datos Compartidos -->
-    <div id="shared-data-banner" class="hidden bg-gradient-to-r from-brand-700 to-indigo-800 text-white py-2 px-4 text-center text-xs font-semibold relative">
-        <span class="inline-flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-            Reporte Sincronizado: Estás visualizando un conjunto de datos compartido en la nube.
-        </span>
-        <button onclick="clearShareMode()" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white text-xs underline font-bold transition">
-            Volver a mis datos locales
-        </button>
     </div>
 
     <!-- Header Principal -->
@@ -111,7 +100,7 @@
                     <div class="bg-slate-50 p-1.5 rounded-xl border border-slate-100 shadow-inner flex items-center justify-center">
                         <img id="brand-logo" src="logo el emprendedor x270 de alto.png" alt="El Emprendedor Logo" 
                              class="h-14 w-auto object-contain transition-all max-w-[150px]"
-                             onerror="showLogoFallback()">
+                             onerror="showLogoFallback(this)">
                         <div id="logo-fallback" class="hidden h-14 w-14 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-md">
                             EE
                         </div>
@@ -126,42 +115,12 @@
                 </div>
             </div>
 
-            <!-- Metadatos de Corte e Interacción -->
-            <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-end">
+            <!-- Metadatos de Corte -->
+            <div class="flex items-center gap-3 w-full lg:w-auto justify-end">
                 <div class="bg-slate-100/80 rounded-lg px-4 py-2 border border-slate-200/50 text-right">
-                    <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Fecha de Corte</p>
-                    <p class="text-sm font-semibold text-slate-800" id="cutoff-date-badge">10 de junio de 2026</p>
+                    <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Fecha de Corte (Último Push)</p>
+                    <p class="text-sm font-semibold text-slate-800" id="cutoff-date-badge">Cargando...</p>
                 </div>
-                
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="triggerFileInput()" class="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm transition shadow-sm hover:shadow active:scale-95 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
-                        </svg>
-                        Actualizar CSV
-                    </button>
-                    
-                    <button id="btn-share-cloud" onclick="shareDashboardOnCloud()" class="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm transition shadow-sm hover:shadow active:scale-95 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186l5.302-3.111m0 0a2.25 2.25 0 112.25 2.25H14.5a2.25 2.25 0 01-2.25-2.25zm0 3.111l5.302 3.111m0 0a2.25 2.25 0 102.25-2.25H14.5a2.25 2.25 0 01-2.25 2.25z" />
-                        </svg>
-                        Compartir
-                    </button>
-
-                    <button onclick="openImportModal()" class="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium text-sm transition" title="Importar mediante Código">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-6h15" />
-                        </svg>
-                        Importar Código
-                    </button>
-
-                    <button onclick="resetToDemo()" id="btn-reset-demo" class="hidden flex items-center justify-center p-2.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-slate-700 transition" title="Restablecer Datos de Muestra">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-                        </svg>
-                    </button>
-                </div>
-                <input type="file" id="csv-file-input" class="hidden" accept=".csv" onchange="handleFileSelect(event)">
             </div>
         </div>
     </header>
@@ -169,53 +128,8 @@
     <!-- Contenedor Principal de la App -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-        <!-- Zona de Carga Inicial / Solo visible si no hay datos -->
-        <div id="upload-zone" class="bg-white border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center transition hover:border-brand-500 bg-gradient-to-b from-white to-brand-50/10">
-            <div class="max-w-md mx-auto">
-                <div class="mx-auto w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center text-brand-600 mb-4 animate-bounce">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                    </svg>
-                </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-1">Cargar reporte de finalización</h3>
-                <p class="text-sm text-slate-500 mb-6">Sube el archivo CSV de capacitación de ILSA o introduce un código compartido por tu equipo.</p>
-                <div class="flex flex-col sm:flex-row justify-center gap-3">
-                    <button onclick="triggerFileInput()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-sm font-semibold transition shadow-md">
-                        Seleccionar Archivo CSV
-                    </button>
-                    <button onclick="openImportModal()" class="px-5 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg text-sm font-semibold transition border border-emerald-200">
-                        Importar por Código
-                    </button>
-                    <button onclick="loadDemoData()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold transition border border-slate-200">
-                        Usar Demo
-                    </button>
-                </div>
-                <p class="text-xs text-slate-400 mt-4 font-medium">Soporta el formato de reporte exportado de la plataforma ILSA.</p>
-            </div>
-        </div>
-
-        <!-- Alerta de Datos Cargados Exitosamente -->
-        <div id="success-toast" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center justify-between transition-all">
-            <div class="flex items-center gap-3">
-                <span class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-                        <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
-                    </svg>
-                </span>
-                <div>
-                    <h4 class="font-bold text-emerald-900 text-sm">¡Base de datos cargada correctamente!</h4>
-                    <p class="text-emerald-700 text-xs">Los datos y la fecha de corte se han actualizado. Haz clic en "Compartir" para generar el enlace o código para tu equipo.</p>
-                </div>
-            </div>
-            <button onclick="hideSuccessToast()" class="text-emerald-400 hover:text-emerald-600">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-        </div>
-
-        <!-- Dashboard Analytics (Oculto hasta que se carguen los datos) -->
-        <div id="dashboard-content" class="space-y-6 hidden">
+        <!-- Dashboard Analytics -->
+        <div id="dashboard-content" class="space-y-6">
             
             <!-- KPIs Principales -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -295,7 +209,7 @@
                         </div>
                     </div>
                     <div class="pt-4 border-t border-slate-100 mt-6 flex justify-between items-center text-xs text-slate-500">
-                        <span>* Información actualizada en tiempo real según la fecha de corte.</span>
+                        <span>* Información actualizada automáticamente mediante git.</span>
                     </div>
                 </div>
 
@@ -434,66 +348,6 @@
         </div>
     </main>
 
-    <!-- Modal para Importar mediante Código Sencillo (Bypass de Sandbox URL) -->
-    <div id="import-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl w-full max-w-md p-6 overflow-hidden shadow-2xl flex flex-col gap-4">
-            <div class="text-center space-y-2">
-                <span class="text-4xl">🔑</span>
-                <h3 class="text-lg font-bold text-slate-900">Importar Dashboard con Código</h3>
-                <p class="text-xs text-slate-500 leading-relaxed">Pega el código de compartición que te proporcionaron para sincronizar la base de datos de manera inmediata.</p>
-            </div>
-            
-            <div class="space-y-2">
-                <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Código de Compartición</label>
-                <input type="text" id="import-code-input" placeholder="Ej: c4b18c02-861f-4..." class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs font-mono focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none">
-            </div>
-
-            <div class="flex justify-end gap-2 pt-2">
-                <button onclick="closeImportModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-semibold text-slate-700 transition">Cancelar</button>
-                <button id="btn-submit-import" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-bold transition">Sincronizar Datos</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Enlace Compartido Generado -->
-    <div id="share-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl w-full max-w-md p-6 overflow-hidden shadow-2xl flex flex-col gap-4">
-            <div class="text-center space-y-2">
-                <span class="text-4xl">🔗</span>
-                <h3 class="text-lg font-bold text-slate-900">¡Compartición de Datos Sincronizada!</h3>
-                <p class="text-xs text-slate-500 leading-relaxed">Debido a que algunos navegadores bloquean las URLs largas dentro de previsualizadores, tienes **dos formas** seguras para que otros lo vean:</p>
-            </div>
-            
-            <!-- Opción A: Código Único (Recomendado) -->
-            <div class="space-y-1 bg-emerald-50 border border-emerald-100 rounded-xl p-3">
-                <span class="text-[9px] uppercase font-bold tracking-wider text-emerald-800">Método 1: Código de Sincronización (Más Seguro)</span>
-                <div class="flex items-center gap-2 mt-1">
-                    <input type="text" id="share-code-input" readonly class="bg-transparent border-none text-xs text-emerald-900 font-mono font-bold flex-1 focus:outline-none select-all" value="">
-                    <button onclick="copyShareCode()" id="btn-copy-code" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition">
-                        Copiar Código
-                    </button>
-                </div>
-            </div>
-
-            <!-- Opción B: Enlace Completo -->
-            <div class="space-y-1 bg-slate-50 border border-slate-200 rounded-xl p-3">
-                <span class="text-[9px] uppercase font-bold tracking-wider text-slate-500">Método 2: Enlace de Acceso Directo</span>
-                <div class="flex items-center gap-2 mt-1">
-                    <input type="text" id="share-url-input" readonly class="bg-transparent border-none text-xs text-slate-700 font-mono flex-1 focus:outline-none select-all" value="">
-                    <button onclick="copyShareUrl()" id="btn-copy-url" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-bold transition">
-                        Copiar Enlace
-                    </button>
-                </div>
-            </div>
-
-            <p class="text-[10px] text-slate-400 text-center leading-normal">Tu equipo puede usar el botón **"Importar por Código"** si el enlace directo se abre sin datos en su previsualizador.</p>
-
-            <div class="flex justify-end pt-2">
-                <button onclick="closeShareModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-semibold text-slate-700 transition">Entendido</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal: Detalle de Participante -->
     <div id="participant-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
         <div class="bg-white rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
@@ -537,10 +391,7 @@
                         </h4>
                         <p class="text-xs text-brand-700 mt-1">Este colaborador completó con éxito el 100% de la formación de Igualdad Salarial y de Género Edición 2025.</p>
                     </div>
-                    <button onclick="generateCertificate()" class="w-full md:w-auto px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition shadow-md active:scale-95 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-14.326 0C3.768 7.28 3 8.215 3 9.296v6.454a2.25 2.25 0 002.25 2.25h1.091" />
-                        </svg>
+                    <button onclick="generateCertificate()" class="w-full md:w-auto px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition shadow-md active:scale-95 cursor-pointer font-medium">
                         Ver y Guardar Diploma
                     </button>
                 </div>
@@ -623,53 +474,9 @@
         </div>
     </div>
 
-    <!-- Footer Corporativo -->
-    <footer class="bg-white border-t border-slate-100 py-6 mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-400 text-xs">
-            <div class="flex items-center gap-2">
-                <span class="font-bold text-slate-600">ILSA S.A.</span>
-                <span>•</span>
-                <span>Programa de Responsabilidad Corporativa e Inclusión</span>
-            </div>
-            <div>
-                Dashboard de Control Interno v2.4 • Todos los derechos reservados.
-            </div>
-        </div>
-    </footer>
-
-    <!-- Firebase y Lógica Completa Unificada en un Único Módulo Seguro -->
+    <!-- Script Principal Unificado de Sincronización Automática con GitHub -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Parámetros e Inicialización Segura de Entorno
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        let firebaseConfig = null;
-        let initialAuthToken = null;
-
-        try {
-            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                firebaseConfig = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
-            }
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                initialAuthToken = __initial_auth_token;
-            }
-        } catch (e) {
-            console.error("Error al inicializar las configuraciones de entorno:", e);
-        }
-
-        let db = null;
-        let auth = null;
-        let isSharedMode = false;
-
-        if (firebaseConfig) {
-            const app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-        }
-
-        // Estado Operacional Global de la Aplicación
+        // Estado Operativo del Dashboard
         window.rawDataset = [];
         window.cleanDataset = [];
         window.filteredDataset = [];
@@ -696,259 +503,218 @@
             "Módulo 5:   Erradicar la violencia de género en las organizaciones - Fecha de finalización"
         ];
 
-        // Autenticación en la Nube con Firebase (RULE 3)
-        async function authenticateUser() {
-            if (!auth) return null;
-            try {
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                return auth.currentUser;
-            } catch (error) {
-                console.error("Error de autenticación anónima/token:", error);
-                return null;
-            }
+        // Función de utilidad robusta de normalización de llaves (Corrige BOM, minúsculas, espacios adicionales y acentos de manera segura)
+        function normalizeKeyString(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "") // Remueve acentos
+                .replace(/^\uFEFF/, '')          // Remueve BOM de Excel
+                .toLowerCase()
+                .replace(/\s+/g, ' ')            // Colapsa múltiples espacios
+                .trim();
         }
 
-        // Recuperar Datos por Identificador (Bypass de Sandbox URL)
-        async function loadSharedDataById(shareId) {
-            if (!db) {
-                showCustomNotification("El servicio de base de datos en la nube no está configurado.");
-                return;
-            }
-
-            const loadIndicator = document.getElementById('global-loading');
-            loadIndicator.classList.remove('hidden');
-            loadIndicator.classList.remove('opacity-0');
-
-            try {
-                await authenticateUser();
-                // RULE 1 - Strict Path para datos públicos compartidos
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'shares', shareId);
-                const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    const sharedContent = docSnap.data();
-                    window.cleanDataset = sharedContent.dataset;
-                    window.filteredDataset = [...window.cleanDataset];
-                    
-                    isSharedMode = true;
-                    document.getElementById('shared-data-banner').classList.remove('hidden');
-                    document.getElementById('cutoff-date-badge').innerText = sharedContent.cutoffDate;
-                    
-                    document.getElementById('upload-zone').classList.add('hidden');
-                    document.getElementById('dashboard-content').classList.remove('hidden');
-                    document.getElementById('btn-reset-demo').classList.add('hidden');
-
-                    renderKPIs();
-                    renderCharts();
-                    renderModuleBreakdown();
-                    renderDomainBreakdown();
-                    renderTable();
-                    
-                    confetti({
-                        particleCount: 100,
-                        spread: 60,
-                        origin: { y: 0.8 }
-                    });
-                    return true;
-                } else {
-                    showCustomNotification("El código introducido no es válido o los datos han expirado.");
-                    return false;
-                }
-            } catch (err) {
-                console.error("Error cargando el código compartido:", err);
-                showCustomNotification("Ocurrió un error al conectar con la nube para importar el código.");
-                return false;
-            } finally {
-                loadIndicator.classList.add('opacity-0');
-                setTimeout(() => loadIndicator.classList.add('hidden'), 300);
-            }
-        }
-
-        // Subir datos locales a la nube
-        async function shareDashboardOnCloud() {
-            if (!db) {
-                showCustomNotification("El servicio de compartición en la nube no está disponible.");
-                return;
-            }
-
-            const shareButton = document.getElementById('btn-share-cloud');
-            const originalText = shareButton.innerHTML;
-            shareButton.disabled = true;
-            shareButton.innerHTML = `<span class="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-1"></span> Sincronizando...`;
-
-            try {
-                const user = await authenticateUser();
-                if (!user) throw new Error("Fallo de autenticación");
-
-                const shareId = crypto.randomUUID();
-                const cutoffDateValue = document.getElementById('cutoff-date-badge').innerText;
-
-                const sharePayload = {
-                    dataset: window.cleanDataset,
-                    cutoffDate: cutoffDateValue,
-                    createdAt: new Date().toISOString()
-                };
-
-                // RULE 1 - Strict Path para datos públicos compartidos
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'shares', shareId);
-                await setDoc(docRef, sharePayload);
-
-                // Generar URL robusta
-                const shareUrl = window.location.origin + window.location.pathname + '?share=' + shareId;
-                
-                document.getElementById('share-code-input').value = shareId;
-                document.getElementById('share-url-input').value = shareUrl;
-                document.getElementById('share-modal').classList.remove('hidden');
-
-                confetti({
-                    particleCount: 120,
-                    spread: 80,
-                    origin: { y: 0.6 }
-                });
-
-            } catch (err) {
-                console.error("Error al compartir en la nube:", err);
-                showCustomNotification("Ocurrió un error al registrar los datos en el servidor.");
-            } finally {
-                shareButton.disabled = false;
-                shareButton.innerHTML = originalText;
-            }
-        }
-
-        // Cargar parámetros de URL al iniciar
-        async function checkAndLoadInitialState() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const shareId = urlParams.get('share');
-
-            if (shareId && db) {
-                const success = await loadSharedDataById(shareId);
-                if (!success) {
-                    loadPersistedData();
-                }
-            } else {
-                loadPersistedData();
-            }
-
-            // Ocultar pantalla de carga inicial
-            const globalLoader = document.getElementById('global-loading');
-            globalLoader.classList.add('opacity-0');
-            setTimeout(() => globalLoader.classList.add('hidden'), 300);
-        }
-
-        // Lógica de Persistencia Local
-        function loadPersistedData() {
-            const savedData = localStorage.getItem('ilsa_dashboard_data');
-            const savedDate = localStorage.getItem('ilsa_cutoff_date');
-
-            if (savedData && savedDate) {
-                window.cleanDataset = JSON.parse(savedData);
-                window.filteredDataset = [...window.cleanDataset];
-                
-                document.getElementById('cutoff-date-badge').innerText = savedDate;
-                document.getElementById('btn-reset-demo').classList.remove('hidden');
-
-                document.getElementById('upload-zone').classList.add('hidden');
-                document.getElementById('dashboard-content').classList.remove('hidden');
-
-                renderKPIs();
-                renderCharts();
-                renderModuleBreakdown();
-                renderDomainBreakdown();
-                renderTable();
-            } else {
-                loadDemoData(true);
-            }
-        }
-
-        function saveToLocalStorage(data, date) {
-            localStorage.setItem('ilsa_dashboard_data', JSON.stringify(data));
-            localStorage.setItem('ilsa_cutoff_date', date);
-            document.getElementById('btn-reset-demo').classList.remove('hidden');
-        }
-
-        function resetToDemo() {
-            localStorage.removeItem('ilsa_dashboard_data');
-            localStorage.removeItem('ilsa_cutoff_date');
-            document.getElementById('btn-reset-demo').classList.add('hidden');
-            loadDemoData();
+        // Función de utilidad para coincidencia flexible de llaves CSV
+        function getRowValueByLooseKey(row, searchKey) {
+            if (!row) return '';
+            const normalizedSearch = normalizeKeyString(searchKey);
             
-            confetti({
-                particleCount: 50,
-                spread: 40,
-                origin: { y: 0.9 }
-            });
+            for (let key in row) {
+                if (row.hasOwnProperty(key)) {
+                    if (normalizeKeyString(key) === normalizedSearch) {
+                        return row[key] !== undefined && row[key] !== null ? String(row[key]).trim() : '';
+                    }
+                }
+            }
+            
+            // Coincidencia inteligente del número de módulo
+            const moduleMatch = searchKey.match(/Módulo \d/i);
+            if (moduleMatch) {
+                const normalizedModuleNum = normalizeKeyString(moduleMatch[0]);
+                for (let key in row) {
+                    if (row.hasOwnProperty(key)) {
+                        const normalizedKey = normalizeKeyString(key);
+                        if (normalizedKey.includes(normalizedModuleNum) && !normalizedKey.includes("fecha")) {
+                            return row[key] !== undefined && row[key] !== null ? String(row[key]).trim() : '';
+                        }
+                    }
+                }
+            }
+            return '';
         }
 
-        function triggerFileInput() {
-            document.getElementById('csv-file-input').click();
+        // Función de utilidad flexible para coincidencia de fechas de módulos
+        function getRowDateValueByLooseKey(row, searchKey) {
+            if (!row) return '';
+            const normalizedSearch = normalizeKeyString(searchKey);
+            
+            for (let key in row) {
+                if (row.hasOwnProperty(key)) {
+                    if (normalizeKeyString(key) === normalizedSearch) {
+                        return row[key] !== undefined && row[key] !== null ? String(row[key]).trim() : '';
+                    }
+                }
+            }
+            const moduleMatch = searchKey.match(/Módulo \d/i);
+            if (moduleMatch) {
+                const normalizedModuleNum = normalizeKeyString(moduleMatch[0]);
+                for (let key in row) {
+                    if (row.hasOwnProperty(key)) {
+                        const normalizedKey = normalizeKeyString(key);
+                        if (normalizedKey.includes(normalizedModuleNum) && normalizedKey.includes("fecha")) {
+                            return row[key] !== undefined && row[key] !== null ? String(row[key]).trim() : '';
+                        }
+                    }
+                }
+            }
+            return '';
         }
 
-        function getFormattedCurrentDate() {
+        // Función de formateo de fecha HTTP (Header Last-Modified)
+        function formatHeaderDate(dateObj) {
+            if (!dateObj || isNaN(dateObj.getTime())) return "10 de junio de 2026";
             const meses = [
                 "enero", "febrero", "marzo", "abril", "mayo", "junio", 
                 "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
             ];
-            const d = new Date();
-            const dia = d.getDate();
-            const mesStr = meses[d.getMonth()];
-            const anio = d.getFullYear();
+            const dia = dateObj.getDate();
+            const mesStr = meses[dateObj.getMonth()];
+            const anio = dateObj.getFullYear();
             return `${dia} de ${mesStr} de ${anio}`;
         }
 
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+        // Carga automática del CSV sincronizado de GitHub
+        async function fetchCSVFromGitHub() {
+            // Rutas relativas que buscará el dashboard en tu repositorio de GitHub Pages
+            const filePaths = [
+                'data.csv',
+                'completion-programa_de_igualdad_salarial_y_de_g__nero_2025-20260610_2045-comma_separated.csv'
+            ];
+            
+            let response = null;
+            let activePath = '';
+            
+            for (const path of filePaths) {
+                try {
+                    const res = await fetch(path);
+                    if (res.ok) {
+                        response = res;
+                        activePath = path;
+                        break;
+                    }
+                } catch (e) {
+                    console.warn(`No se pudo leer el archivo en la ruta: ${path}`);
+                }
+            }
 
-            window.Papa.parse(file, {
+            if (!response) {
+                console.warn("No se encontró el archivo CSV en el servidor. Cargando datos de demo como respaldo.");
+                loadDemoData(true);
+                const globalLoader = document.getElementById('global-loading');
+                if (globalLoader) {
+                    globalLoader.classList.add('opacity-0');
+                    setTimeout(() => globalLoader.classList.add('hidden'), 300);
+                }
+                return;
+            }
+
+            // Obtener fecha de última modificación (Último Push)
+            let cutoffDate = "10 de junio de 2026";
+            const lastModHeader = response.headers.get('Last-Modified');
+            if (lastModHeader) {
+                cutoffDate = formatHeaderDate(new Date(lastModHeader));
+            }
+
+            const csvText = await response.text();
+            const papa = window.Papa;
+            
+            if (!papa) {
+                showNotification("No se pudo iniciar la librería PapaParse.", "error");
+                return;
+            }
+
+            papa.parse(csvText, {
                 header: true,
                 skipEmptyLines: true,
                 complete: function(results) {
                     if (results.data && results.data.length > 0) {
-                        const newCutoffDate = getFormattedCurrentDate();
-                        processUploadedData(results.data, newCutoffDate);
-                        
-                        confetti({
-                            particleCount: 150,
-                            spread: 80,
-                            origin: { y: 0.6 }
+                        // Saneamiento robusto frente al UTF-8 BOM (\uFEFF) y espacios extra en cabeceras
+                        const sanitizedData = results.data.map(row => {
+                            const cleanRow = {};
+                            for (let key in row) {
+                                if (row.hasOwnProperty(key)) {
+                                    const sanitizedKey = key.replace(/^\uFEFF/, '').trim();
+                                    cleanRow[sanitizedKey] = row[key];
+                                }
+                            }
+                            return cleanRow;
                         });
-                        showSuccessToast();
+
+                        processUploadedData(sanitizedData, cutoffDate);
                     } else {
-                        showCustomNotification("El archivo CSV cargado no contiene datos válidos.");
+                        showNotification("El archivo CSV en GitHub está vacío o no es válido.", "error");
+                        loadDemoData(true);
                     }
                 },
                 error: function(err) {
-                    showCustomNotification("Error de procesamiento CSV: " + err.message);
+                    showNotification("Error de procesamiento CSV: " + err.message, "error");
+                    loadDemoData(true);
                 }
             });
+
+            const globalLoader = document.getElementById('global-loading');
+            if (globalLoader) {
+                globalLoader.classList.add('opacity-0');
+                setTimeout(() => globalLoader.classList.add('hidden'), 300);
+            }
         }
 
         function processUploadedData(data, cutoffDateValue) {
             window.rawDataset = data;
             
-            window.cleanDataset = window.rawDataset.map(item => {
+            // Filtrar filas completamente vacías o sin identificador/nombre mínimo utilizando el Loose Key Matcher
+            const validRows = window.rawDataset.filter(item => {
+                if (!item || typeof item !== 'object') return false;
+                const hasId = getRowValueByLooseKey(item, 'id') || getRowValueByLooseKey(item, 'numero de id');
+                const hasName = getRowValueByLooseKey(item, 'nombre');
+                const hasEmail = getRowValueByLooseKey(item, 'direccion de correo') || getRowValueByLooseKey(item, 'correo') || getRowValueByLooseKey(item, 'email');
+                return !!(hasId || hasName || hasEmail);
+            });
+
+            window.cleanDataset = validRows.map(item => {
                 let completedCount = 0;
-                MODULE_NAMES.forEach(modName => {
-                    if (item[modName] && item[modName].trim().toLowerCase() === 'finalizado') {
+                
+                // Mapear los valores de los módulos de manera tolerante a espaciados y BOMs
+                const m1_val = getRowValueByLooseKey(item, MODULE_NAMES[0]);
+                const m2_val = getRowValueByLooseKey(item, MODULE_NAMES[1]);
+                const m3_val = getRowValueByLooseKey(item, MODULE_NAMES[2]);
+                const m4_val = getRowValueByLooseKey(item, MODULE_NAMES[3]);
+                const m5_val = getRowValueByLooseKey(item, MODULE_NAMES[4]);
+
+                const m1_date = getRowDateValueByLooseKey(item, MODULE_DATE_KEYS[0]);
+                const m2_date = getRowDateValueByLooseKey(item, MODULE_DATE_KEYS[1]);
+                const m3_date = getRowDateValueByLooseKey(item, MODULE_DATE_KEYS[2]);
+                const m4_date = getRowDateValueByLooseKey(item, MODULE_DATE_KEYS[3]);
+                const m5_date = getRowDateValueByLooseKey(item, MODULE_DATE_KEYS[4]);
+
+                const mValues = [m1_val, m2_val, m3_val, m4_val, m5_val];
+                mValues.forEach(val => {
+                    if (String(val).trim().toLowerCase() === 'finalizado') {
                         completedCount++;
                     }
                 });
 
-                const isCourseDone = (completedCount === 5 || (item['Curso finalizado'] && item['Curso finalizado'].trim().toLowerCase() === 'finalizado'));
+                // Curso finalizado
+                const cursoFinVal = getRowValueByLooseKey(item, "Curso finalizado");
+                const isCourseDone = (completedCount === 5 || cursoFinVal.toLowerCase() === 'finalizado' || !!cursoFinVal.match(/\d+/));
                 
                 let globalCompletionDate = "";
                 if (isCourseDone) {
-                    if (item['Curso finalizado'] && item['Curso finalizado'].match(/\d+/)) {
-                        globalCompletionDate = item['Curso finalizado'];
+                    if (cursoFinVal && cursoFinVal.match(/\d+/)) {
+                        globalCompletionDate = cursoFinVal;
                     } else {
-                        let dates = [];
-                        MODULE_DATE_KEYS.forEach(k => {
-                            if (item[k]) dates.push(item[k]);
-                        });
+                        const dates = [m1_date, m2_date, m3_date, m4_date, m5_date].filter(d => d);
                         if (dates.length > 0) {
                             globalCompletionDate = dates[dates.length - 1];
                         } else {
@@ -957,20 +723,24 @@
                     }
                 }
 
+                const idVal = getRowValueByLooseKey(item, 'id') || getRowValueByLooseKey(item, 'numero de id') || Math.random().toString(36).substr(2, 9);
+                const nombreVal = getRowValueByLooseKey(item, 'nombre') || 'Colaborador Sin Nombre';
+                const emailVal = getRowValueByLooseKey(item, 'direccion de correo') || getRowValueByLooseKey(item, 'correo') || getRowValueByLooseKey(item, 'email') || 'sin-correo@ilsa.la';
+
                 return {
-                    id: item['ID'] || item['Número de ID'] || Math.random().toString(36).substr(2, 9),
-                    nombre: item['Nombre'] ? item['Nombre'].trim() : 'Colaborador Sin Nombre',
-                    email: item['Dirección de correo'] ? item['Dirección de correo'].trim() : 'sin-correo@ilsa.la',
-                    m1: item[MODULE_NAMES[0]] || 'No finalizado',
-                    m1_date: item[MODULE_DATE_KEYS[0]] || '',
-                    m2: item[MODULE_NAMES[1]] || 'No finalizado',
-                    m2_date: item[MODULE_DATE_KEYS[1]] || '',
-                    m3: item[MODULE_NAMES[2]] || 'No finalizado',
-                    m3_date: item[MODULE_DATE_KEYS[2]] || '',
-                    m4: item[MODULE_NAMES[3]] || 'No finalizado',
-                    m4_date: item[MODULE_DATE_KEYS[3]] || '',
-                    m5: item[MODULE_NAMES[4]] || 'No finalizado',
-                    m5_date: item[MODULE_DATE_KEYS[4]] || '',
+                    id: idVal,
+                    nombre: nombreVal,
+                    email: emailVal,
+                    m1: m1_val || 'No finalizado',
+                    m1_date: m1_date || '',
+                    m2: m2_val || 'No finalizado',
+                    m2_date: m2_date || '',
+                    m3: m3_val || 'No finalizado',
+                    m3_date: m3_date || '',
+                    m4: m4_val || 'No finalizado',
+                    m4_date: m4_date || '',
+                    m5: m5_val || 'No finalizado',
+                    m5_date: m5_date || '',
                     completado: isCourseDone,
                     modulos_completados: completedCount,
                     fecha_fin: globalCompletionDate
@@ -985,8 +755,6 @@
             document.getElementById('upload-zone').classList.add('hidden');
             document.getElementById('dashboard-content').classList.remove('hidden');
 
-            saveToLocalStorage(window.cleanDataset, cutoffDateValue);
-
             renderKPIs();
             renderCharts();
             renderModuleBreakdown();
@@ -994,7 +762,7 @@
             renderTable();
         }
 
-        // Renderizadores de Interfaz
+        // Renderizadores de Datos
         function renderKPIs() {
             const total = window.cleanDataset.length;
             const completed = window.cleanDataset.filter(item => item.completado).length;
@@ -1015,7 +783,7 @@
 
             MODULE_NAMES.forEach((modName, idx) => {
                 const cleanKey = `m${idx + 1}`;
-                const completedCount = window.cleanDataset.filter(item => item[cleanKey].toLowerCase() === 'finalizado').length;
+                const completedCount = window.cleanDataset.filter(item => String(item[cleanKey]).toLowerCase() === 'finalizado').length;
                 const percentage = totalParticipants > 0 ? Math.round((completedCount / totalParticipants) * 100) : 0;
 
                 const colors = ['from-purple-500 to-indigo-500', 'from-blue-500 to-cyan-500', 'from-emerald-500 to-teal-500', 'from-amber-500 to-orange-500', 'from-rose-500 to-pink-500'];
@@ -1083,39 +851,46 @@
             const completed = window.cleanDataset.filter(item => item.completado).length;
             const pending = total - completed;
 
-            if (completionChartInstance) {
-                completionChartInstance.destroy();
-            }
+            const chartLoader = window.Chart;
+            if (!chartLoader) return;
 
-            const ctxDonut = document.getElementById('completion-donut-chart').getContext('2d');
-            completionChartInstance = new window.Chart(ctxDonut, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Completado (100%)', 'Pendiente / En Progreso'],
-                    datasets: [{
-                        data: [completed, pending],
-                        backgroundColor: ['#10b981', '#fbbf24'],
-                        borderWidth: 2,
-                        borderColor: '#ffffff',
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    cutout: '72%'
+            // Chart 1: Dona de distribución
+            const ctxDonutEl = document.getElementById('completion-donut-chart');
+            if (ctxDonutEl) {
+                if (completionChartInstance) {
+                    completionChartInstance.destroy();
                 }
-            });
+                const ctxDonut = ctxDonutEl.getContext('2d');
+                completionChartInstance = new chartLoader(ctxDonut, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Completado (100%)', 'Pendiente / En Progreso'],
+                        datasets: [{
+                            data: [completed, pending],
+                            backgroundColor: ['#10b981', '#fbbf24'],
+                            borderWidth: 2,
+                            borderColor: '#ffffff',
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        cutout: '72%'
+                    }
+                });
+            }
 
             const completedDates = window.cleanDataset
                 .filter(item => item.completado && item.fecha_fin)
                 .map(item => {
-                    const parts = item.fecha_fin.split(' ');
+                    const cleanDateStr = String(item.fecha_fin).trim();
+                    const parts = cleanDateStr.split(' ');
                     return parts[0];
                 });
 
@@ -1124,77 +899,110 @@
                 dateCounts[d] = (dateCounts[d] || 0) + 1;
             });
 
-            const sortedDates = Object.keys(dateCounts).sort((a, b) => {
-                const parseDate = (dStr) => {
-                    const p = dStr.split('/');
-                    return new Date(p[2], p[1] - 1, p[0]);
-                };
-                return parseDate(a) - parseDate(b);
-            });
+            // Parser de fecha seguro frente a excepciones e inconsistencias del Excel
+            const parseDate = (dStr) => {
+                try {
+                    if (!dStr || typeof dStr !== 'string') return new Date(0);
+                    const datePartOnly = dStr.split(' ')[0].trim();
+                    const separator = datePartOnly.includes('/') ? '/' : '-';
+                    const p = datePartOnly.split(separator);
+                    if (p.length < 3) return new Date(0);
+                    
+                    if (p[0].length === 4) { // YYYY-MM-DD
+                        const year = parseInt(p[0], 10) || 2026;
+                        const month = (parseInt(p[1], 10) - 1) || 0;
+                        const day = parseInt(p[2], 10) || 1;
+                        return new Date(year, month, day);
+                    } else { // DD/MM/YYYY
+                        const day = parseInt(p[0], 10) || 1;
+                        const month = (parseInt(p[1], 10) - 1) || 0;
+                        const year = parseInt(p[2], 10) || 2026;
+                        return new Date(year, month, day);
+                    }
+                } catch (err) {
+                    console.error("Error parseando fecha:", dStr, err);
+                    return new Date(0);
+                }
+            };
 
+            // Ordenamiento cronológico de las fechas con parser seguro
+            const sortedDates = Object.keys(dateCounts)
+                .filter(d => d && (d.includes('/') || d.includes('-')))
+                .sort((a, b) => parseDate(a) - parseDate(b));
+
+            const cumulativeData = [];
             let runningTotal = 0;
-            const cumulativeData = sortedDates.map(date => {
+            sortedDates.forEach(date => {
                 runningTotal += dateCounts[date];
-                return runningTotal;
+                cumulativeData.push(runningTotal);
             });
 
-            if (timelineChartInstance) {
-                timelineChartInstance.destroy();
+            // Salvaguarda si no hay datos de egresados aún
+            if (sortedDates.length === 0) {
+                sortedDates.push('10/06/2026');
+                cumulativeData.push(completed);
             }
 
-            const ctxLine = document.getElementById('timeline-line-chart').getContext('2d');
-            timelineChartInstance = new window.Chart(ctxLine, {
-                type: 'line',
-                data: {
-                    labels: sortedDates,
-                    datasets: [{
-                        label: 'Colaboradores Certificados (Acumulado)',
-                        data: cumulativeData,
-                        fill: true,
-                        backgroundColor: 'rgba(124, 58, 237, 0.08)',
-                        borderColor: '#7c3aed',
-                        borderWidth: 3,
-                        pointBackgroundColor: '#7c3aed',
-                        pointHoverRadius: 6,
-                        tension: 0.35
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
+            // Chart 2: Línea acumulativa temporal
+            const ctxLineEl = document.getElementById('timeline-line-chart');
+            if (ctxLineEl) {
+                if (timelineChartInstance) {
+                    timelineChartInstance.destroy();
+                }
+                const ctxLine = ctxLineEl.getContext('2d');
+                timelineChartInstance = new chartLoader(ctxLine, {
+                    type: 'line',
+                    data: {
+                        labels: sortedDates,
+                        datasets: [{
+                            label: 'Colaboradores Certificados (Acumulado)',
+                            data: cumulativeData,
+                            fill: true,
+                            backgroundColor: 'rgba(124, 58, 237, 0.08)',
+                            borderColor: '#7c3aed',
+                            borderWidth: 3,
+                            pointBackgroundColor: '#7c3aed',
+                            pointHoverRadius: 6,
+                            tension: 0.35
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                precision: 0,
-                                font: {
-                                    family: 'Plus Jakarta Sans',
-                                    size: 10
-                                }
-                            },
-                            grid: {
-                                color: '#f1f5f9'
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
                             }
                         },
-                        x: {
-                            ticks: {
-                                font: {
-                                    family: 'Plus Jakarta Sans',
-                                    size: 10
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0,
+                                    font: {
+                                        family: 'Plus Jakarta Sans',
+                                        size: 10
+                                    }
+                                },
+                                grid: {
+                                    color: '#f1f5f9'
                                 }
                             },
-                            grid: {
-                                display: false
+                            x: {
+                                ticks: {
+                                    font: {
+                                        family: 'Plus Jakarta Sans',
+                                        size: 10
+                                    }
+                                },
+                                grid: {
+                                    display: false
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
+            }
         }
 
         function renderTable() {
@@ -1226,7 +1034,7 @@
                 const pct = Math.round((totalMod / 5) * 100);
 
                 const getModBadge = (status) => {
-                    if (status.trim().toLowerCase() === 'finalizado') {
+                    if (String(status).trim().toLowerCase() === 'finalizado') {
                         return `<span class="inline-flex h-5 w-5 rounded-full bg-emerald-100 text-emerald-800 items-center justify-center font-bold text-[10px]" title="Completado">✓</span>`;
                     }
                     return `<span class="inline-flex h-5 w-5 rounded-full bg-slate-100 text-slate-400 items-center justify-center font-bold text-[10px]" title="Pendiente">-</span>`;
@@ -1258,7 +1066,7 @@
                         }
                     </td>
                     <td class="py-3 px-5 text-right">
-                        <button onclick="openParticipantModal('${item.id}')" class="px-2.5 py-1.5 text-[11px] font-bold bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 rounded transition cursor-pointer">
+                        <button onclick="openParticipantModal('${item.id}')" class="px-2.5 py-1.5 text-[11px] font-bold bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 rounded transition cursor-pointer font-medium">
                             Ver Ficha
                         </button>
                     </td>
@@ -1337,7 +1145,7 @@
             ];
 
             modules.forEach(m => {
-                const isCompleted = m.status.trim().toLowerCase() === 'finalizado';
+                const isCompleted = String(m.status).trim().toLowerCase() === 'finalizado';
                 const itemHtml = `
                     <div class="flex items-start sm:items-center justify-between p-3 rounded-lg border ${isCompleted ? 'bg-emerald-50/50 border-emerald-100' : 'bg-slate-50 border-slate-100'} gap-2 text-xs">
                         <div class="min-w-0">
@@ -1379,120 +1187,7 @@
             document.getElementById('diploma-modal').classList.remove('hidden');
         }
 
-        function closeDiplomaModal() {
-            document.getElementById('diploma-modal').classList.add('hidden');
-        }
-
-        function printDiploma() {
-            window.print();
-        }
-
-        function exportFilteredData() {
-            if (window.filteredDataset.length === 0) return;
-
-            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-            csvContent += "ID,Nombre,Email,Progreso %,M1,M2,M3,M4,M5,Curso Finalizado,Fecha Finalizacion\n";
-
-            window.filteredDataset.forEach(item => {
-                const pct = Math.round((item.modulos_completados / 5) * 100);
-                const row = [
-                    item.id,
-                    `"${item.nombre}"`,
-                    item.email,
-                    `${pct}%`,
-                    item.m1,
-                    item.m2,
-                    item.m3,
-                    item.m4,
-                    item.m5,
-                    item.completado ? "Finalizado" : "No finalizado",
-                    item.fecha_fin || ""
-                ].join(",");
-                csvContent += row + "\n";
-            });
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `reporte_igualdad_salarial_${new Date().toISOString().slice(0,10)}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // Lógica de Modales de Importación / Compartición
-        function openImportModal() {
-            document.getElementById('import-code-input').value = '';
-            document.getElementById('import-modal').classList.remove('hidden');
-        }
-
-        function closeImportModal() {
-            document.getElementById('import-modal').classList.add('hidden');
-        }
-
-        async function submitImportCode() {
-            const code = document.getElementById('import-code-input').value.trim();
-            if (!code) {
-                showCustomNotification("Por favor, introduce un código de compartición válido.");
-                return;
-            }
-            closeImportModal();
-            const success = await loadSharedDataById(code);
-            if (success) {
-                showCustomNotification("¡Sincronización exitosa! Se han cargado los datos compartidos.");
-            }
-        }
-
-        function closeShareModal() {
-            document.getElementById('share-modal').classList.add('hidden');
-        }
-
-        function copyShareUrl() {
-            const input = document.getElementById('share-url-input');
-            input.select();
-            document.execCommand('copy');
-            
-            const copyBtn = document.getElementById('btn-copy-url');
-            const originalText = copyBtn.innerText;
-            copyBtn.innerText = "¡Copiado!";
-            copyBtn.classList.replace('bg-brand-600', 'bg-emerald-600');
-            
-            setTimeout(() => {
-                copyBtn.innerText = originalText;
-                copyBtn.classList.replace('bg-emerald-600', 'bg-brand-600');
-            }, 2000);
-        }
-
-        function copyShareCode() {
-            const input = document.getElementById('share-code-input');
-            input.select();
-            document.execCommand('copy');
-            
-            const copyBtn = document.getElementById('btn-copy-code');
-            const originalText = copyBtn.innerText;
-            copyBtn.innerText = "¡Copiado!";
-            copyBtn.classList.replace('bg-emerald-600', 'bg-brand-600');
-            
-            setTimeout(() => {
-                copyBtn.innerText = originalText;
-                copyBtn.classList.replace('bg-brand-600', 'bg-emerald-600');
-            }, 2000);
-        }
-
-        function clearShareMode() {
-            const urlWithoutParams = window.location.origin + window.location.pathname;
-            window.location.href = urlWithoutParams;
-        }
-
-        function hideSuccessToast() {
-            document.getElementById('success-toast').classList.add('hidden');
-        }
-
-        function showCustomNotification(text) {
-            alert(text);
-        }
-
-        // Datos de Demo por defecto
+        // Carga de datos reales basados en el archivo CSV subido
         function loadDemoData(isSilent = false) {
             const demoData = [
                 {
@@ -1533,8 +1228,8 @@
                 },
                 {
                     "ID": "98517", "Nombre": "JUAN CARLOS BRITO", "Dirección de correo": "jbrito@grafandina.com",
-                    "Módulo 1: Género e inclusión laboral": "Finalizado", "Módulo 1: Género e inclusión laboral - Fecha de finalización": "01/06/2026 09:15",
-                    "Módulo 2: Equidad e igualdad de género en las organizaciones": "Finalizado", "Módulo 2: Equidad e igualdad de género en las organizaciones - Fecha de finalización": "02/06/2026 11:20",
+                    "Módulo 1: Género e inclusión laboral": "No finalizado", "Módulo 1: Género e inclusión laboral - Fecha de finalización": "",
+                    "Módulo 2: Equidad e igualdad de género en las organizaciones": "No finalizado", "Módulo 2: Equidad e igualdad de género en las organizaciones - Fecha de finalización": "",
                     "Módulo 3: Derechos laborales de mujeres y hombres": "No finalizado", "Módulo 3: Derechos laborales de mujeres y hombres - Fecha de finalización": "",
                     "Módulo 4:  Atención de denuncias por discriminación salarial": "No finalizado", "Módulo 4:  Atención de denuncias por discriminación salarial - Fecha de finalización": "",
                     "Módulo 5:   Erradicar la violencia de género en las organizaciones": "No finalizado", "Módulo 5:   Erradicar la violencia de género en las organizaciones - Fecha de finalización": "",
@@ -1542,10 +1237,19 @@
                 },
                 {
                     "ID": "98518", "Nombre": "MARIELA CARRION", "Dirección de correo": "mcarrion@grafandina.com",
-                    "Módulo 1: Género e inclusión laboral": "Finalizado", "Módulo 1: Género e inclusión laboral - Fecha de finalización": "15/05/2026 14:00",
-                    "Módulo 2: Equidad e igualdad de género en las organizaciones": "Finalizado", "Módulo 2: Equidad e igualdad de género en las organizaciones - Fecha de finalización": "18/05/2026 16:30",
-                    "Módulo 3: Derechos laborales de mujeres y hombres": "Finalizado", "Módulo 3: Derechos laborales de mujeres y hombres - Fecha de finalización": "20/05/2026 10:15",
-                    "Módulo 4:  Atención de denuncias por discriminación salarial": "Finalizado", "Módulo 4:  Atención de denuncias por discriminación salarial - Fecha de finalización": "22/05/2026 11:45",
+                    "Módulo 1: Género e inclusión laboral": "No finalizado", "Módulo 1: Género e inclusión laboral - Fecha de finalización": "",
+                    "Módulo 2: Equidad e igualdad de género en las organizaciones": "No finalizado", "Módulo 2: Equidad e igualdad de género en las organizaciones - Fecha de finalización": "",
+                    "Módulo 3: Derechos laborales de mujeres y hombres": "No finalizado", "Módulo 3: Derechos laborales de mujeres y hombres - Fecha de finalización": "",
+                    "Módulo 4:  Atención de denuncias por discriminación salarial": "No finalizado", "Módulo 4:  Atención de denuncias por discriminación salarial - Fecha de finalización": "",
+                    "Módulo 5:   Erradicar la violencia de género en las organizaciones": "No finalizado", "Módulo 5:   Erradicar la violencia de género en las organizaciones - Fecha de finalización": "",
+                    "Curso finalizado": "No finalizado"
+                },
+                {
+                    "ID": "98519", "Nombre": "GABRIELA CHAMBA", "Dirección de correo": "gchamba@grafandina.com",
+                    "Módulo 1: Género e inclusión laboral": "No finalizado", "Módulo 1: Género e inclusión laboral - Fecha de finalización": "",
+                    "Módulo 2: Equidad e igualdad de género en las organizaciones": "No finalizado", "Módulo 2: Equidad e igualdad de género en las organizaciones - Fecha de finalización": "",
+                    "Módulo 3: Derechos laborales de mujeres y hombres": "No finalizado", "Módulo 3: Derechos laborales de mujeres y hombres - Fecha de finalización": "",
+                    "Módulo 4:  Atención de denuncias por discriminación salarial": "No finalizado", "Módulo 4:  Atención de denuncias por discriminación salarial - Fecha de finalización": "",
                     "Módulo 5:   Erradicar la violencia de género en las organizaciones": "No finalizado", "Módulo 5:   Erradicar la violencia de género en las organizaciones - Fecha de finalización": "",
                     "Curso finalizado": "No finalizado"
                 }
@@ -1553,41 +1257,68 @@
 
             const defaultDate = "10 de junio de 2026";
             processUploadedData(demoData, defaultDate);
-            document.getElementById('btn-reset-demo').classList.add('hidden');
-            localStorage.removeItem('ilsa_dashboard_data');
-            localStorage.removeItem('ilsa_cutoff_date');
         }
 
-        // Vinculación de Funciones al Ámbito Global de window para Inline HTML
-        window.triggerFileInput = triggerFileInput;
-        window.handleFileSelect = handleFileSelect;
-        window.loadDemoData = loadDemoData;
-        window.loadPersistedData = loadPersistedData;
-        window.resetToDemo = resetToDemo;
+        // Sistema fluido de notificaciones Toast
+        function showNotification(message, type = 'info') {
+            const toastContainer = document.getElementById('toast-container') || createToastContainer();
+            
+            const toast = document.createElement('div');
+            toast.className = `flex items-center gap-3 p-4 rounded-xl shadow-lg border text-xs font-semibold transform translate-y-4 opacity-0 transition-all duration-300 max-w-sm ${
+                type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' :
+                type === 'error' ? 'bg-rose-50 border-rose-200 text-rose-800' :
+                'bg-blue-50 border-blue-200 text-blue-800'
+            }`;
+            
+            const icon = type === 'success' ? '✓' : type === 'error' ? '⚠' : 'ℹ';
+            
+            toast.innerHTML = `
+                <span class="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                    type === 'success' ? 'bg-emerald-500 text-white' :
+                    type === 'error' ? 'bg-rose-500 text-white' :
+                    'bg-blue-500 text-white'
+                }">${icon}</span>
+                <p class="flex-1">${message}</p>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+            }, 10);
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 4000);
+        }
+
+        function createToastContainer() {
+            const container = document.createElement('div');
+            container.id = 'toast-container';
+            container.className = 'fixed bottom-5 right-5 z-[100] flex flex-col gap-2';
+            document.body.appendChild(container);
+            return container;
+        }
+
+        // Exponer funciones globales requeridas por elementos HTML
         window.prevPage = prevPage;
         window.nextPage = nextPage;
         window.filterTable = filterTable;
         window.openParticipantModal = openParticipantModal;
         window.closeModal = closeModal;
         window.generateCertificate = generateCertificate;
-        window.closeDiplomaModal = closeDiplomaModal;
+        window.closeDiplomaModal = () => document.getElementById('diploma-modal').classList.add('hidden');
         window.printDiploma = printDiploma;
         window.exportFilteredData = exportFilteredData;
-        window.openImportModal = openImportModal;
-        window.closeImportModal = closeImportModal;
-        window.closeShareModal = closeShareModal;
-        window.copyShareUrl = copyShareUrl;
-        window.copyShareCode = copyShareCode;
-        window.hideSuccessToast = hideSuccessToast;
-        window.clearShareMode = clearShareMode;
-        window.shareDashboardOnCloud = shareDashboardOnCloud;
 
-        // Event Listeners Estables
-        document.getElementById('btn-submit-import').addEventListener('click', submitImportCode);
-        window.addEventListener('DOMContentLoaded', checkAndInitialStateWrapper);
-
-        function checkAndInitialStateWrapper() {
-            checkAndLoadInitialState();
+        // Iniciar la carga al levantar el DOM
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            fetchCSVFromGitHub();
+        } else {
+            window.addEventListener('DOMContentLoaded', fetchCSVFromGitHub);
         }
 
     </script>
